@@ -1,5 +1,20 @@
 {
-    "require": {
-        "silex/silex": "~1.1"
-    }
+	"require": {
+		"silex/silex": "~1.1",
+		"twig/twig": ">=1.8,<2.0-dev",
+		"doctrine/dbal": "~2.3",
+		"symfony/security": "~2.3",
+		"symfony/twig-bridge": "2.1.*"
+	},
+	"authors": [
+	{
+		"name": "Richard Baker",
+		"email": "rich@mondaymorning.org"
+	}
+	],
+	"autoload": {
+		"psr-0": {
+			"SparkGraph": "app"
+		}
+	}
 }

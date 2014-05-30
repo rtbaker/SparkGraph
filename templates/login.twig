@@ -1,0 +1,6 @@
+<form action="{{ path('admin_login_check') }}" method="post">
+    Username: <input type="text" name="_username" value="{{ last_username }}" />
+    Password: <input type="password" name="_password" value="" />
+    <input type="submit" />
+</form>
+<p>{{ error }}</p>

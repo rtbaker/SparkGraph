@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+
+    <!-- Set the viewport width to device width for mobile -->
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1.0">
+
+    <title>{% block title %}SparkGraph{% endblock %}</title>
+  
+    <link rel="stylesheet" href="/css/styles.css">
+
+    <script src="/javascripts/modernizr.foundation.js"></script>
+
+    <!-- IE Fix for HTML5 Tags -->
+    <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+</head>
+<body>
+	{% if is_granted('IS_AUTHENTICATED_FULLY') %}
+	    <a href="{{ path('logout') }}">Logout</a>
+	{% else %}
+	    <a href="{{ path('login') }}">Login</a>
+	{% endif %}
+	
+{% block body %}
+<h1>No page content</h1>
+<p>Guess this bit's not done yet, sorry</p>
+{% endblock %}
+
+{% block scripts %}{% endblock %}
+</body>
+</html>
