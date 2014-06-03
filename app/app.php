@@ -7,20 +7,6 @@ $app = require __DIR__.'/bootstrap.php';
 $app['debug'] = true;
 
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
-$app->register(new Silex\Provider\SecurityServiceProvider());
-
-$app['security.firewalls'] =  array(
-		    'admin' => array(
-		        'pattern' => '^/admin',
-		        'form' => array('login_path' => '/login', 'check_path' => '/admin/login_check'),
-		        'users' => $app->share(function () use ($app) {
-						    return new SparkGraph\UserProvider($app['db']); }),
-						'logout' => array('logout_path' => '/admin/logout'),
-		    ),
-			'unsecured' => array(
-				        'anonymous' => true,
-	    ),
-);
 
 $app->register(new Silex\Provider\SessionServiceProvider());
 

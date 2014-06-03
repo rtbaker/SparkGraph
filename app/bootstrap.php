@@ -17,7 +17,20 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
 $databaseConfig = require __DIR__.'/dbconfig.php';
 $app->register(new Silex\Provider\DoctrineServiceProvider(), $databaseConfig);
 
+$app->register(new Silex\Provider\SecurityServiceProvider());
 
+$app['security.firewalls'] =  array(
+		    'admin' => array(
+		        'pattern' => '^/admin',
+		        'form' => array('login_path' => '/login', 'check_path' => '/admin/login_check'),
+		        'users' => $app->share(function () use ($app) {
+						    return new SparkGraph\UserProvider($app['db']); }),
+						'logout' => array('logout_path' => '/admin/logout'),
+		    ),
+			'unsecured' => array(
+				        'anonymous' => true,
+	    ),
+);
 
 
 return $app;
