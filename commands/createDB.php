@@ -40,3 +40,11 @@ if (!$schema->tablesExist('sparkcore')){
 	
 	$schema->createTable($sparkcore);
 }
+
+if (!$schema->tablesExist('graph')){
+	$graph = new Table("graph");
+	$graph->addColumn('sparkid', 'string', array('length' => 32));
+	$graph->addColumn('title', 'string', array('length' => 64));
+	
+	$schema->createTable($graph);
+}

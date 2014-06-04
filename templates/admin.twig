@@ -3,9 +3,9 @@
 {% block sidebar %}
 
 <ul class="nav nav-sidebar">
-	<li class="active"><a href="#">Overview</a></li>
-	<li><a href="#">Spark Cores</a></li>
-	<li><a href="#">Graphs</a></li>
+	<li id="menu_coreoverview" class="active"><a href="#" onclick="coreoverview();">Overview</a></li>
+	<li id="menu_cores"><a href="#" onclick="cores();">Spark Cores</a></li>
+	<li id="menu_graphs"><a href="#" onclick="graphs();">Graphs</a></li>
 
 </ul>
 
@@ -15,5 +15,16 @@
 {% block body %}
 
 <h1>Spark Core Graphs Admin</h1>
+
+<p><span id="overview"></span>
+
+<div id="cores"></div>
+<div id="graphs"></div>
+
+{% endblock %}
+
+{% block pagescripts %}
+
+<script src="/js/admin.js"></script>
 
 {% endblock %}
