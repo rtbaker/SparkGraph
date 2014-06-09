@@ -38,6 +38,8 @@ if (!$schema->tablesExist('sparkcore')){
 	$sparkcore->addColumn('name', 'string', array('length' => 32));
 	$sparkcore->addColumn('token', 'string', array('length' => 64));
 	
+	$sparkcore->setPrimaryKey(array("id"));
+	
 	$schema->createTable($sparkcore);
 }
 

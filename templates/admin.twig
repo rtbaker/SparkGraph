@@ -16,10 +16,49 @@
 
 <h1>Spark Core Graphs Admin</h1>
 
-<p><span id="overview"></span>
+<div id="overviewblock">
+	<p><span id="overview"></span>
+</div>
 
-<div id="cores"></div>
-<div id="graphs"></div>
+<div id="coresblock" class="hidden">
+	<h2>Spark Cores</h2>
+	
+	<table id="corestable" class="table table-striped">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Name</th>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+	
+	<h4>Add Core:</h4>
+	<form id="addcore" action="">
+		Core id: <input name="coreid" type="text"/> Access Token: <input name="apikey" type="text"/>
+		<input type="hidden" name="corename"/>
+		<input type="Submit" value="Lookup" id="addcoresubmit"/>
+	</form>
+	<br/>
+	<span id="addcoreinfo"></span>
+	<br/><span id="addcoreerror"></span>
+</div>
+
+<div id="graphsblock" class="hidden">
+<h2>Graphs</h2>
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>Graph</th>
+				<th>SparkCore</th>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+	
+</div>
 
 {% endblock %}
 
