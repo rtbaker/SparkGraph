@@ -23,7 +23,7 @@
 <div id="coresblock" class="hidden">
 	<h2>Spark Cores</h2>
 	
-	<table id="corestable" class="table table-striped">
+	<table id="corestable" class="table table-striped table-hover">
 		<thead>
 			<tr>
 				<th>ID</th>
@@ -34,12 +34,18 @@
 		</tbody>
 	</table>
 	
+	<div id="coredetail" class="hidden">
+		<h4>Spark Core: <span id="coredetailname"></span> 
+	</div>
+	
 	<h4>Add Core:</h4>
 	<form id="addcore" action="">
 		Core id: <input name="coreid" type="text"/> Access Token: <input name="apikey" type="text"/>
 		<input type="hidden" name="corename"/>
 		<input type="Submit" value="Lookup" id="addcoresubmit"/>
 	</form>
+	<br/>
+	<div class="center-block hidden" id="spinner"></div>
 	<br/>
 	<span id="addcoreinfo"></span>
 	<br/><span id="addcoreerror"></span>

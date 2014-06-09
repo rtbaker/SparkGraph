@@ -65,6 +65,15 @@ $app->get('/admin/listcores.json', function(Silex\Application $app, Request $req
     return new JsonResponse($cores, 200, array('Content-Type', 'application/json') );
 })->bind('/admin/listcores.json');
 
+$app->get('/admin/coredetail/{id}', function(Silex\Application $app, Request $request, $id){
+    $statement = $app['db']->executeQuery("select * from sparkcore where id = ?", array($id));
+		$core = $statement->fetch();
+		
+		$core['token'] = "xxxxxxxxxxxxxxxxxxxx";
+    return new JsonResponse($core, 200, array('Content-Type', 'application/json') );
+})->bind('/admin/coredetail');
+
+
 $app->post('/admin/addcore', function (Silex\Application $app, Request $request) {
 	try {
 		$id = $request->get('id');

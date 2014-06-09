@@ -50,3 +50,11 @@ if (!$schema->tablesExist('graph')){
 	
 	$schema->createTable($graph);
 }
+
+if (!$schema->tablesExist('sparkvariable')){
+	$sparkvars = new Table('sparkvariable');
+	$sparkvars->addColumn('sparkid', 'string', array('length' => 32));
+	$sparkvars->addColumn('name', 'string', array('length' => 32));
+	$sparkvars->addColumn('type', 'string', array('length' => 32));
+	
+}

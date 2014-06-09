@@ -2,6 +2,11 @@ $( document ).ready(function() {
 	coreoverview();
 	
 	$("#addcore").submit(coresubmit);
+	
+	$('#corestable').delegate('tr', 'click', function(e){ 
+		var id = $(this).find("td.coreid").text();
+    showCoreDetail(id);
+	});
 });
 
 function coreoverview(){
@@ -31,15 +36,33 @@ function cores(){
 		for (var num in data){
 			core = data[num];
 //			console.log(core);
-			html = "<tr><td>" + core.id + "</td><td>" + core.name + "</td></tr>";
+			html = "<tr><td class=\"coreid\">" + core.id + "</td><td>" + core.name + "</td></tr>";
 			$("#corestable tbody").append(html); 
 		}
 	});
+	
+	$('#corestable tr').click(function() {
+		alert('hello');
+	        var id = $(this).find("td").text();
+	        showCoreDetail(id);
+	 });
+	
 }
+
+function showCoreDetail(id){
+	$.getJSON("/admin/coredetail/" + id)
+		.done(function(data) {
+			console.log(data);
+
+		});
+}
+
 
 dolookup=1;
 
 function coresubmit(event){
+	$("#spinner").removeClass("hidden");
+	
 	if (dolookup){
 		$("#addcoreerror").text("");
 		
@@ -64,6 +87,9 @@ function coresubmit(event){
 				else if (jqxhr.status == "400"){ err = response.error_description; }
 				
 				$("#addcoreerror").text("Error: " + err);
+			})
+			.always(function(){
+				$("#spinner").addClass("hidden");
 			});
 		
 	} else {
@@ -89,6 +115,9 @@ function coresubmit(event){
 			})
 			.fail(function(jqxhr, textStatus, error){
 				$("#addcoreerror").text("Error: " + jqxhr.responseText);
+			})
+			.always(function(){
+				$("#spinner").addClass("hidden");
 			});
 	}
 
@@ -99,7 +128,7 @@ function graphs(){
 	setMenuHighlight("graphs");
 	clear();
 	
-	$("#graphsblock").removeClass("hidden")
+	$("#graphsblock").removeClass("hidden");
 }
 
 function setMenuHighlight(current){

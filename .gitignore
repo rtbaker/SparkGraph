@@ -3,3 +3,4 @@ composer.phar
 composer.lock
 cache/*
 logs/*
+.DS_Store
