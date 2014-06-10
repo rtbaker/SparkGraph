@@ -2,7 +2,7 @@
     cursor: pointer;
 }
 
-#spinner {
+.spinner {
 	background-image: url("/img/ajax-loader.gif");
 	height: 32px;
 	width: 32px;

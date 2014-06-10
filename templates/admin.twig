@@ -34,22 +34,36 @@
 		</tbody>
 	</table>
 	
-	<div id="coredetail" class="hidden">
-		<h4>Spark Core: <span id="coredetailname"></span> 
+	<div id="coredetailblock" class="hidden">
+		<h3>Core Detail</h3>
+		<div class="center-block hidden spinner" id="detailspinner"></div>
+		<br/>
+		<span id="coredetailname"></span> <span id="coredetailconnected"></span>
+		<table id="corevars" class="table table-bordered">
+			<thead>
+				<tr><th>Name</th><th>Type</th><th>Collection Frequency (minutes)</th><th>Collect ?</th><th></th></tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+		<span id="checkvarerror"></span>
 	</div>
 	
-	<h4>Add Core:</h4>
-	<form id="addcore" action="">
-		Core id: <input name="coreid" type="text"/> Access Token: <input name="apikey" type="text"/>
-		<input type="hidden" name="corename"/>
-		<input type="Submit" value="Lookup" id="addcoresubmit"/>
-	</form>
-	<br/>
-	<div class="center-block hidden" id="spinner"></div>
-	<br/>
-	<span id="addcoreinfo"></span>
-	<br/><span id="addcoreerror"></span>
+	<div>
+		<h3>Add Core:</h3>
+		<form id="addcore" action="">
+			Core id: <input name="coreid" type="text"/> Access Token: <input name="apikey" type="text"/>
+			<input type="hidden" name="corename"/>
+			<input type="Submit" value="Lookup" id="addcoresubmit"/>
+		</form>
+		<br/>
+		<div class="center-block hidden spinner" id="spinner"></div>
+		<br/>
+		<span id="addcoreinfo"></span>
+		<br/><span id="addcoreerror"></span>
+	</div>
 </div>
+
 
 <div id="graphsblock" class="hidden">
 <h2>Graphs</h2>

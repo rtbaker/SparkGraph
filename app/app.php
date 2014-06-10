@@ -68,9 +68,29 @@ $app->get('/admin/listcores.json', function(Silex\Application $app, Request $req
 $app->get('/admin/coredetail/{id}', function(Silex\Application $app, Request $request, $id){
     $statement = $app['db']->executeQuery("select * from sparkcore where id = ?", array($id));
 		$core = $statement->fetch();
+
+		$vars = $app['db']->fetchAll('select * from sparkvariable where sparkid = ?', array($id)); 
+
+		$url = 'https://api.spark.io/v1/devices/' . $core['id'] . '?access_token=' . $core['token'];
+		$app['monolog']->addDebug($url);
+		$ch = curl_init($url);
 		
+		$options = array(
+			CURLOPT_RETURNTRANSFER => true
+		);
+		
+		curl_setopt_array( $ch, $options );
+		$res = curl_exec($ch);
+		
+		// We don't want this to get out
 		$core['token'] = "xxxxxxxxxxxxxxxxxxxx";
-    return new JsonResponse($core, 200, array('Content-Type', 'application/json') );
+  
+		$result = array();
+		$result['core'] = $core;
+		$result['vars'] = $vars;
+		$result['cloud'] = json_decode($res);
+		
+  	return new JsonResponse($result, 200, array('Content-Type', 'application/json') );
 })->bind('/admin/coredetail');
 
 
@@ -97,6 +117,46 @@ $app->post('/admin/addcore', function (Silex\Application $app, Request $request)
 	return new Response("Record added", 201);
 	
 })->method('POST')->bind('/admin/addcore');
+
+$app->post('/admin/checkVar', function (Silex\Application $app, Request $request) {
+	try {
+		$id = $request->get('id');
+		$name = $request->get('name');
+		$type = $request->get('type');
+		$frequency = $request->get('frequency');
+		
+		$checked = $request->get('checked');
+		$checkedB = ($checked == 'true') ? true : false;
+		
+		$app['monolog']->addDebug("checkVar -> id: " . $id . ", name: " . $name . ", type: " . $type .
+			", checked: " . $checked . ", frequency: " . $frequency);
+		
+		$sql = "select * from sparkvariable where sparkid = ? and name = ?";
+		$stmt = $app['db']->executeQuery($sql, array($id, $name));
+		
+		if ($row = $stmt->fetch()){
+			// Update
+			$app['db']->executeUpdate('UPDATE sparkvariable SET type = ?, collect = ?, frequency = ? WHERE sparkid = ? AND name = ?',
+				array($type, $checkedB, $frequency, $id, $name),
+				array(\PDO::PARAM_STR, \PDO::PARAM_BOOL, \PDO::PARAM_INT, \PDO::PARAM_STR, \PDO::PARAM_STR)
+				);
+		} else {
+			// create
+			$app['db']->executeUpdate('INSERT INTO sparkvariable VALUES (?, ?, ?, ?, ?)',
+				array($id, $name, $type, $frequency, $checkedB),
+				array(\PDO::PARAM_STR, \PDO::PARAM_STR, \PDO::PARAM_STR, \PDO::PARAM_INT, \PDO::PARAM_BOOL)
+				);
+		}
+	}
+	catch (\Exception $e){
+		$err = $e->getMessage();
+		
+		return new Response($err, 500);
+	}
+	
+	return new Response("Record setup", 201);
+	
+})->method('POST')->bind('/admin/checkVar');
 
 /* The end ! */
 return $app;

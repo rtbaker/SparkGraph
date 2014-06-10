@@ -49,14 +49,84 @@ function cores(){
 	
 }
 
+currentCore = "";
+
 function showCoreDetail(id){
+	$("#coredetailblock").removeClass("hidden");
+	$("#detailspinner").removeClass("hidden");
+	
 	$.getJSON("/admin/coredetail/" + id)
 		.done(function(data) {
 			console.log(data);
+			name = data.core.name;
+			currentCore = data.core.id;
+			$("#coredetailname").text(name);
+			
+			if (!data.cloud.connected){
+				$("#coredetailconnected").text("not connected !");
+			}
+			
+			vars = data.cloud.variables;
 
+			$('#corevars tbody').html("");
+			
+			if (vars !== null){
+				knownvars = data.vars;
+				len = knownvars.length;
+			
+				jQuery.each(vars, function(key, value){
+					checked = "";
+					freq = 10;
+					
+					for (i = 0; i < len; i++){
+						v = knownvars[i];
+						if (v.name == key){
+							if (v.collect == "1"){ checked = "checked"; }
+							freq = v.frequency;
+						}
+					}
+				
+					html = "<tr><td class=\"varname\">" + key + "</td><td class=\"vartype\">" +
+						value + "</td><td><input class=\"texttbl\" type=\"text\" value=\"" + freq +
+						"\"/></td><td><input type=\"checkbox\" class=\"chcktbl\" " + checked +
+						"/></td><td><input type=\"submit\" value=\"Update\" class=\"submittbl\"/></td></tr>";
+					$("#corevars tbody").append(html);
+				});
+				
+				$('.submittbl').click(varClicked);
+			} else {
+				// Show any already stored vars
+			}
+		})
+		.fail(function(jqxhr, textStatus, error){
+				
+		})
+		.always(function(){
+				$("#detailspinner").addClass("hidden");
 		});
 }
 
+function varClicked(){
+	row = $(this).closest("tr");
+	
+	name = $(row).find(".varname").text();
+	type = $(row).find(".vartype").text();
+	frequency = $(row).find(".texttbl").val();
+	checked = $(row).find(".chcktbl").is(':checked');
+	
+	console.log(name + " " + type + " " + checked + " " + frequency);
+	
+	$.post("/admin/checkVar", { 'id': currentCore, 'name': name, 'type': type, 'checked': checked, 'frequency': frequency})
+		.done(function() {
+			
+		})
+		.fail(function(jqxhr, textStatus, error){
+			$("#checkvarerror").text("Error: " + jqxhr.responseText);
+		})
+		.always(function(){
+
+		});
+}
 
 dolookup=1;
 

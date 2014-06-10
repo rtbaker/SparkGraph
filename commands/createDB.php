@@ -56,5 +56,18 @@ if (!$schema->tablesExist('sparkvariable')){
 	$sparkvars->addColumn('sparkid', 'string', array('length' => 32));
 	$sparkvars->addColumn('name', 'string', array('length' => 32));
 	$sparkvars->addColumn('type', 'string', array('length' => 32));
+	$sparkvars->addColumn('frequency', 'integer', array('default' => 10, "unsigned" => true));
+	$sparkvars->addColumn('collect', 'boolean');
+
+	$schema->createTable($sparkvars);
+}
+
+if (!$schema->tablesExist('data')){
+	$data = new Table('data');
+	$data->addColumn('sparkid', 'string', array('length' => 32));
+	$data->addColumn('varname', 'string', array('length' => 32));
+	$data->addColumn('value', 'text');
+	$data->addColumn('date', 'datetime');
 	
+	$schema->createTable($data);
 }
