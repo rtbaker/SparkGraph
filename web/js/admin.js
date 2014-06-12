@@ -2,11 +2,7 @@ $( document ).ready(function() {
 	coreoverview();
 	
 	$("#addcore").submit(coresubmit);
-	
-	$('#corestable').delegate('tr', 'click', function(e){ 
-		var id = $(this).find("td.coreid").text();
-    showCoreDetail(id);
-	});
+	$("#addgraph").submit(graphsubmit);
 });
 
 function coreoverview(){
@@ -41,12 +37,10 @@ function cores(){
 		}
 	});
 	
-	$('#corestable tr').click(function() {
-		alert('hello');
-	        var id = $(this).find("td").text();
-	        showCoreDetail(id);
-	 });
-	
+	$('#corestable').delegate('tr', 'click', function(e){ 
+		var id = $(this).find("td.coreid").text();
+    showCoreDetail(id);
+	});
 }
 
 currentCore = "";
@@ -199,6 +193,59 @@ function graphs(){
 	clear();
 	
 	$("#graphsblock").removeClass("hidden");
+	
+	$.getJSON( "/admin/listgraphs.json", function( data ) {
+		$("#graphstable tbody").html("");
+		
+	//	console.log(data);
+		for (var num in data){
+			graph = data[num];
+			checked = (graph.public == 1) ? "Yes" : "No";
+//			console.log(core);
+			html = "<tr><td><span class=\"hidden graphid\">" + graph.id + "</span>" + graph.title + "</td><td>" + checked + "</td></tr>";
+			$("#graphstable tbody").append(html); 
+		}
+	});
+	
+	$('#graphstable').delegate('tr', 'click', function(e){ 
+		var id = $(this).find("span.graphid").text();
+    showGraphDetail(id);
+	});
+}
+
+function graphsubmit(event) {
+	$("#graphaddspinner").removeClass("hidden");
+	$("#addgrapherror").text("");
+
+	title = $("input:text[name=graphaddtitle]").val();
+	publicGraph = $("input:checkbox[name=graphaddpublic]").is(':checked');
+	console.log(title + " " + publicGraph);
+	
+	$.post("/admin/addgraph", { 'title': title, 'public': publicGraph })
+	.done(function() {
+		// reset
+		$("input:text[name=graphaddtitle]").val("");
+		$("input:checkbox[name=graphaddpublic]").val(0);
+		$("#addgraphinfo").text("Success !");
+		$("#addgrapherror").text("");
+
+		// reload the table
+		graphs();
+	})
+	.fail(function(jqxhr, textStatus, error){
+		$("#addgrapherror").text("Error: " + jqxhr.responseText);
+	})
+	.always(function(){
+		$("#graphaddspinner").addClass("hidden");
+	});
+	
+	event.preventDefault();
+}
+function showGraphDetail(graphid){
+	setMenuHighlight("graphs");
+	clear();
+	
+	$("#graphdetailblock").removeClass("hidden");
 }
 
 function setMenuHighlight(current){
@@ -214,6 +261,6 @@ function clear(){
 	$("#overviewblock").addClass("hidden");
 	$("#coresblock").addClass("hidden");
 	$("#graphsblock").addClass("hidden");
-	
+	$("#graphdetailblock").addClass("hidden");
 	
 }

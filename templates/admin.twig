@@ -67,16 +67,34 @@
 
 <div id="graphsblock" class="hidden">
 <h2>Graphs</h2>
-	<table class="table table-striped">
+	<table id="graphstable" class="table table-striped">
 		<thead>
 			<tr>
 				<th>Graph</th>
-				<th>SparkCore</th>
+				<th>Public ?</th>
 			</tr>
 		</thead>
 		<tbody>
 		</tbody>
 	</table>
+	
+	<div>
+		<h3>Add Graph:</h3>
+		<form id="addgraph" action="">
+			Title: <input name="graphaddtitle" type="text"/> Publicly accessible ?: <input name="graphaddpublic" type="checkbox"/>
+			  <input type="Submit" value="Submit" id="addgrapsubmit"/>
+		</form>
+		<br/>
+		<div class="center-block hidden spinner" id="graphaddspinner"></div>
+		<br/>
+		<span id="addgraphinfo"></span>
+		<br/><span id="addgrapherror"></span>
+	</div>
+	
+</div>
+
+<div id="graphdetailblock" class="hidden">
+<h2>Graph Detail</h2>
 	
 </div>
 

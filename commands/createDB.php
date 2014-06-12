@@ -43,18 +43,11 @@ if (!$schema->tablesExist('sparkcore')){
 	$schema->createTable($sparkcore);
 }
 
-if (!$schema->tablesExist('graph')){
-	$graph = new Table("graph");
-	$graph->addColumn('sparkid', 'string', array('length' => 32));
-	$graph->addColumn('title', 'string', array('length' => 64));
-	
-	$schema->createTable($graph);
-}
-
 if (!$schema->tablesExist('sparkvariable')){
 	$sparkvars = new Table('sparkvariable');
 	$sparkvars->addColumn('sparkid', 'string', array('length' => 32));
 	$sparkvars->addColumn('name', 'string', array('length' => 32));
+	$sparkvars->addUniqueIndex(array('sparkid', 'name'));
 	$sparkvars->addColumn('type', 'string', array('length' => 32));
 	$sparkvars->addColumn('frequency', 'integer', array('default' => 10, "unsigned" => true));
 	$sparkvars->addColumn('collect', 'boolean');
@@ -70,4 +63,23 @@ if (!$schema->tablesExist('data')){
 	$data->addColumn('date', 'datetime');
 	
 	$schema->createTable($data);
+}
+
+if (!$schema->tablesExist('graph')) {
+	$graph = new Table('graph');
+ 	$graph->addColumn('id', 'integer', array('unsigned' => true, 'autoincrement' => true));
+	$graph->setPrimaryKey(array('id'));
+	$graph->addColumn('title', 'string', array('length' => 64));
+	$graph->addColumn('public', 'boolean', array('default' => 0));
+		
+	$schema->createTable($graph);
+}
+
+if (!$schema->tablesExist('graphvariable')){
+	$graphvar = new Table('graphvariable');
+	$graphvar->addColumn('graphid', 'integer', array('unsigned' => true));
+	$graphvar->addColumn('sparkid', 'string', array('length' => 32));
+	$graphvar->addColumn('varname', 'string', array('length' => 32));
+	
+	$schema->createTable($graphvar);
 }

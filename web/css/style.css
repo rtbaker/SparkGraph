@@ -2,6 +2,10 @@
     cursor: pointer;
 }
 
+#graphstable td:hover {
+    cursor: pointer;
+}
+
 .spinner {
 	background-image: url("/img/ajax-loader.gif");
 	height: 32px;

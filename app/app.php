@@ -65,6 +65,13 @@ $app->get('/admin/listcores.json', function(Silex\Application $app, Request $req
     return new JsonResponse($cores, 200, array('Content-Type', 'application/json') );
 })->bind('/admin/listcores.json');
 
+$app->get('/admin/listgraphs.json', function(Silex\Application $app, Request $request){
+    $sql = "select * from graph";
+		$graphs = $app['db']->fetchAll($sql);
+		
+    return new JsonResponse($graphs, 200, array('Content-Type', 'application/json') );
+})->bind('/admin/listgraphs.json');
+
 $app->get('/admin/coredetail/{id}', function(Silex\Application $app, Request $request, $id){
     $statement = $app['db']->executeQuery("select * from sparkcore where id = ?", array($id));
 		$core = $statement->fetch();
@@ -157,6 +164,33 @@ $app->post('/admin/checkVar', function (Silex\Application $app, Request $request
 	return new Response("Record setup", 201);
 	
 })->method('POST')->bind('/admin/checkVar');
+
+$app->post('/admin/addgraph', function (Silex\Application $app, Request $request) {
+	try {
+		$title = $request->get('title');
+		$public = $request->get('public');
+		
+		$publicB = ($public == 'true') ? true : false;
+		
+		$app['monolog']->addDebug('Adding new graph to the database.');
+		$app['monolog']->addDebug("title: " . $title . ", public: " . $public);
+		
+		$app['db']->executeUpdate('INSERT INTO graph (title, public) VALUES (?, ?)',
+			array($title, $publicB),
+			array(\PDO::PARAM_STR, \PDO::PARAM_BOOL));
+	}
+	catch (\Exception $e){
+		$err = $e->getMessage();
+		
+		if (substr_count($e->getMessage(), "Duplicate entry")){
+			$err = "Graph already exists in the database.";
+		}
+		return new Response($err, 500);
+	}
+	
+	return new Response("Record added", 201);
+	
+})->method('POST')->bind('/admin/addgraph');
 
 /* The end ! */
 return $app;
