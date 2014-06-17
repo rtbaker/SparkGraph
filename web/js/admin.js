@@ -246,6 +246,31 @@ function showGraphDetail(graphid){
 	clear();
 	
 	$("#graphdetailblock").removeClass("hidden");
+	
+	$.getJSON("/admin/graphdetail/" + graphid)
+		.done(function(data) {
+			console.log(data);
+			
+			$('#graphdetailtitle').text(data.graph.title);
+			
+			availablevars = data.availablevars;
+			length = availablevars.length;
+			
+			$('#graphdetailvars').html("");
+			
+			for (i = 0; i < length; i++){
+				variable = availablevars[i];
+				
+				html = "<li>" + variable.corename + ": " + variable.variablename + "</li>";
+				$('#graphdetailvars').append(html);
+			}
+		})
+		.fail(function(jqxhr, textStatus, error){
+				
+		})
+		.always(function(){
+			
+		});
 }
 
 function setMenuHighlight(current){

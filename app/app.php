@@ -192,5 +192,29 @@ $app->post('/admin/addgraph', function (Silex\Application $app, Request $request
 	
 })->method('POST')->bind('/admin/addgraph');
 
+$app->get('/admin/graphdetail/{id}', function(Silex\Application $app, Request $request, $id){
+    $statement = $app['db']->executeQuery("select * from graph where id = ?", array($id));
+		
+		if (!$graph = $statement->fetch()){
+			return new Response("No such graph", 500);
+		};
+
+		$vars = $app['db']->fetchAll("select * from graphvariable where graphid = ?", array($id));
+		
+		$sql = 'SELECT sparkvariable.name AS variablename, sparkvariable.type, sparkvariable.frequency, ' .
+			'sparkvariable.collect, sparkcore.id AS coreid, sparkcore.name AS corename' . 
+			' FROM sparkvariable, sparkcore WHERE sparkvariable.sparkid = sparkcore.id AND sparkvariable.type IN (\'double\', \'int\')'; 
+
+		$app['monolog']->addDebug($sql);
+		$availablevars = $app['db']->fetchAll($sql);
+		
+		$result = array();
+		$result['graph'] = $graph;
+		$result['vars'] = $vars;
+		$result['availablevars'] = $availablevars;
+		
+  	return new JsonResponse($result, 200, array('Content-Type', 'application/json') );
+})->bind('/admin/graphdetail');
+
 /* The end ! */
 return $app;
