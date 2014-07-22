@@ -11,6 +11,7 @@ $app->register(new Silex\Provider\SessionServiceProvider());
 
 $app->register(new Silex\Provider\MonologServiceProvider(), array(
     'monolog.logfile' => __DIR__.'/../logs/development.log',
+		    'monolog.level' => $app['debug'] ? Monolog\Logger::INFO : Monolog\Logger::ERROR,
 ));
 
 $app->error(function (\Exception $e, $code) {
@@ -22,8 +23,43 @@ $app->error(function (\Exception $e, $code) {
  */
 $app->get('/', function (Silex\Application $app, Request $request) {
     return $app['twig']->render('index.twig');
-})
-->bind('home');
+})->bind('home');
+
+$app->get('/listgraphs.json', function(Silex\Application $app, Request $request){
+    $sql = "SELECT * FROM graph WHERE public = 1";
+		$graphs = $app['db']->fetchAll($sql);
+		
+    return new JsonResponse($graphs, 200, array('Content-Type', 'application/json') );
+})->bind('/listgraphs.json');
+
+$app->get('/graphdata.json', function(Silex\Application $app, Request $request){
+	$id = $request->get('id');
+	if (!isset($id) || !is_numeric($id)){
+		return new Response("No id specified", 500);
+	}
+	
+  $sql = "SELECT * FROM graph WHERE public = 1 AND id = ?";
+	$graph = $app['db']->fetchAll($sql, array($id));
+	
+	if (!count($graph)){
+		return new Response("No such graph", 500);
+	}	
+		
+ 	$sql = "SELECT * FROM graphvariable WHERE graphid = ?";
+	$vars = $app['db']->fetchAll($sql, array($id));
+	
+	$results = array();
+	$app['monolog']->addDebug("here");
+	foreach ($vars as $var){
+		$sql = "SELECT date, value FROM data WHERE sparkid = ? AND varname = ?";
+		$data = $app['db']->fetchAll($sql, array($var['sparkid'], $var['varname']));
+		
+		$results[$var['varname']] = $data;
+	}
+
+ return new JsonResponse($results, 200, array('Content-Type', 'application/json') );
+})->bind('/graphdata.json');
+
 
 // Admin Page
 
@@ -215,6 +251,44 @@ $app->get('/admin/graphdetail/{id}', function(Silex\Application $app, Request $r
 		
   	return new JsonResponse($result, 200, array('Content-Type', 'application/json') );
 })->bind('/admin/graphdetail');
+
+$app->post('/admin/graphvar', function (Silex\Application $app, Request $request) {
+	try {
+		$graphid = $request->get('graphid');
+		$sparkid = $request->get('sparkid');
+		$varname = $request->get('varname');
+		$checked = $request->get('checked');
+		
+		$sql = "SELECT * FROM graphvariable WHERE graphid = ? AND sparkid = ? AND varname = ?";
+		
+		$vars = array($graphid, $sparkid, $varname);
+		$stmt = $app['db']->executeQuery($sql, $vars);
+		
+		if ($row = $stmt->fetch()){
+			// Exists already
+			if ($checked == 'false'){
+				// remove
+				$app['db']->executeUpdate('DELETE FROM graphvariable WHERE graphid = ? AND sparkid = ? AND varname = ?',
+					$vars);
+			}
+		} else {
+			// Doesn't exist
+			if ($checked == 'true'){
+				// Add
+				$app['db']->executeUpdate('INSERT INTO graphvariable VALUES (?, ?, ?)',
+					$vars);
+			}
+		}	
+	}
+	catch (\Exception $e){
+		$err = $e->getMessage();
+		
+		return new Response($err, 500);
+	}
+	
+	return new Response("All good", 201);
+	
+})->method('POST')->bind('/admin/graphvar');
 
 /* The end ! */
 return $app;

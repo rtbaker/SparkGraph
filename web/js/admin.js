@@ -255,14 +255,49 @@ function showGraphDetail(graphid){
 			
 			availablevars = data.availablevars;
 			length = availablevars.length;
+			vars = data.vars;
 			
-			$('#graphdetailvars').html("");
-			
+			$("#graphdetailvars tbody").html("");
+
 			for (i = 0; i < length; i++){
 				variable = availablevars[i];
 				
-				html = "<li>" + variable.corename + ": " + variable.variablename + "</li>";
-				$('#graphdetailvars').append(html);
+				varcollect = (variable.collect == "1") ? "yes" : "no";
+				graphed = "";
+				
+				for (y = 0; y < vars.length; y++){
+					v = vars[y];
+					if ((v.sparkid == variable.coreid) && (v.varname == variable.variablename)) { graphed = "checked"; }
+				}
+				
+				html = "<tr class=\"graphvarrow\"><td><span class=\"coreid hidden\">" + variable.coreid +
+				 "</span><span class=\"graphid hidden\">" + graphid + "</span><span class=\"varname hidden\">" + variable.variablename + "</span>"
+				 	+ variable.corename + "</td><td>" + variable.variablename + "</td><td>" + varcollect + "</td><td>" +
+					"<input type=\"checkbox\" " + graphed + "/></td></tr>";
+
+				$("#graphdetailvars tbody").append(html);
+				
+				$('#graphdetailvars').delegate('input', 'click', function(e){ 
+					var tr = $(this).closest("tr.graphvarrow");
+					
+					var sparkid = $(tr).find("span.coreid").text();
+					var graphid = $(tr).find("span.graphid").text();
+					var varname = $(tr).find("span.varname").text();
+					
+					var checked = $(this).is(":checked");
+					
+					$.post("/admin/graphvar", { 'sparkid': sparkid, 'graphid': graphid, 'varname': varname, 'checked': checked })
+					.done(function() {
+						// reset
+						$("#graphvarerror").text("");
+					})
+					.fail(function(jqxhr, textStatus, error){
+						$("#graphvarerror").text("Error: " + jqxhr.responseText);
+					})
+					.always(function(){
+
+					});
+				});
 			}
 		})
 		.fail(function(jqxhr, textStatus, error){

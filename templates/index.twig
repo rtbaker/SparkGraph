@@ -1,7 +1,25 @@
 {% extends 'layout.twig' %}
 
+{% block sidebar %}
+
+<h3>Graphs:</h3>
+
+<ul id="graphlist">
+	
+</ul>
+
+{% endblock %}
+
 {% block body %}
 
 <h1> Spark Graph </h1>
+
+{% endblock %}
+
+{% block pagescripts %}
+
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="/js/main.js"></script>
+
 
 {% endblock %}

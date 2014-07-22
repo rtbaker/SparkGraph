@@ -9,7 +9,6 @@
 
 </ul>
 
-
 {% endblock %}
 
 {% block body %}
@@ -99,9 +98,14 @@
 <h3 id="graphdetailtitle"></h3>
 
 <h4>Variables:</h4>
-	<ul id="graphdetailvars">
-		
-	</ul>
+	<table id="graphdetailvars" class="table table-striped">
+		<thead>
+			<tr><th>Spark Core</th><th>Variable Name</th><th>Currently Collected ?</th><th>In graph ?</th></tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+	<br/><span id="graphvarerror"></span>
 </div>
 
 {% endblock %}

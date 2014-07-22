@@ -6,6 +6,10 @@
     cursor: pointer;
 }
 
+#graphlist li:hover {
+	cursor: pointer;
+}
+
 .spinner {
 	background-image: url("/img/ajax-loader.gif");
 	height: 32px;
