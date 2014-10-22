@@ -49,14 +49,57 @@ $app->get('/graphdata.json', function(Silex\Application $app, Request $request){
 	$vars = $app['db']->fetchAll($sql, array($id));
 	
 	$results = array();
-	$app['monolog']->addDebug("here");
+
+	$results['cols'] = array();
+	$results['rows'] = array();
+	
+	$datecol = array();
+	$datecol['id'] = 'date';
+	$datecol['label'] = 'Date';
+	$datecol['type'] = 'datetime';
+	
+	$results['cols'][] = $datecol;
+	
+	$data = array();
+	
+	$colcount = 0;
+	
 	foreach ($vars as $var){
-		$sql = "SELECT date, value FROM data WHERE sparkid = ? AND varname = ?";
-		$data = $app['db']->fetchAll($sql, array($var['sparkid'], $var['varname']));
+		$col = array();
+		$col['id'] = $var['varname'];
+		$col['label'] = $var['varname'];
+		$col['type'] = 'number';
+		$colcount++;
 		
-		$results[$var['varname']] = $data;
+		$results['cols'][] = $col;
+		$sql = "SELECT date, value FROM data WHERE sparkid = ? AND varname = ?";
+		$sqldata = $app['db']->fetchAll($sql, array($var['sparkid'], $var['varname']));
+
+		foreach ($sqldata as $row){
+			if (!isset($data[$row['date']])){ $data[$row['date']] = array(); }
+			
+			if ($row['value'] != -500) { $data[$row['date']][] = $row['value']; }
+		}
 	}
 
+	foreach (array_keys($data) as $d){
+		$entry = array();
+		$entry[] = array( 'v' => 'new Date(' . $d . ')' );
+		
+		// Blank values as placeholders
+		for ($i = 0; $i < $colcount; $i++){
+			$entry[$i+1] = array();
+		}
+		
+		$count = 1;
+		foreach ($data[$d] as $v){
+			$entry[$count] = array( 'v' => $v);
+			$count++;
+		}
+		
+		$results['rows'][] = array( 'c' => $entry);
+	}
+	
  return new JsonResponse($results, 200, array('Content-Type', 'application/json') );
 })->bind('/graphdata.json');
 
