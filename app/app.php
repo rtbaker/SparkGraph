@@ -161,6 +161,25 @@ $app->post('/admin/addcore', function (Silex\Application $app, Request $request)
 	
 })->method('POST')->bind('/admin/addcore');
 
+$app->post('/admin/updatecoretoken', function (Silex\Application $app, Request $request) {
+	try {
+		$id = $request->get('id');
+		$token = $request->get('token');
+		
+		$app['monolog']->addDebug('Updating core token.');
+		$app['monolog']->addDebug("id: " . $id . ", token: " . $token);
+		
+		$app['db']->executeUpdate('UPDATE sparkcore SET token = ? WHERE id = ?', array($token, $id));
+	}
+	catch (\Exception $e){
+		$err = $e->getMessage();
+		return new Response($err, 500);
+	}
+	
+	return new Response("Record updated", 201);
+	
+})->method('POST')->bind('/admin/updatecoretoken');
+
 $app->post('/admin/checkVar', function (Silex\Application $app, Request $request) {
 	try {
 		$id = $request->get('id');

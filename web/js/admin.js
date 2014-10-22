@@ -41,6 +41,7 @@ function cores(){
 		var id = $(this).find("td.coreid").text();
     showCoreDetail(id);
 	});
+	
 }
 
 currentCore = "";
@@ -56,8 +57,24 @@ function showCoreDetail(id){
 			currentCore = data.core.id;
 			$("#coredetailname").text(name);
 			
-			if (!data.cloud.connected){
+			if (data.cloud.code != 200){
+				$("#coredetailconnected").text(data.cloud.error_description);
+				$("#detailspinner").addClass("hidden");
+				
+				console.log(data.cloud.error);
+				
+				if (data.cloud.error == "invalid_grant"){
+					form = "<br/><form id=\"updatecoretoken\" action=\"\">New token: <input name=\"apikey\" type=\"text\"/>" +
+						"<input type=\"hidden\" name=\"coreid\" value=\"" + id + "\"/> <input type=\"Submit\" id=\"updatecoretokensubmit\"/></form><br/>" +
+						"<span id=\"updatecoretokenerror\"></span>";
+					$("#coredetailtokenupdate").html(form);
+					
+					$("#updatecoretoken").submit(coretokenupdate);
+				}
+			}
+			else if (!data.cloud.connected){
 				$("#coredetailconnected").text("not connected !");
+				$("#detailspinner").addClass("hidden");
 			}
 			
 			vars = data.cloud.variables;
@@ -186,6 +203,29 @@ function coresubmit(event){
 	}
 
 	event.preventDefault();
+}
+
+function coretokenupdate(){
+	id = $("input:hidden[name=coreid]").val();
+	token = $("input:text[name=apikey]").val();
+	
+	console.log("updating token for: \"" + id + "\", \"" + token + "\"");
+	
+	$.post("/admin/updatecoretoken", { 'id': id, 'token': token})
+		.done(function() {
+			// reset
+			$("#coredetailtokenupdate").html("");
+			
+			// reload the table
+			showCoreDetail(id);
+		})
+		.fail(function(jqxhr, textStatus, error){
+			$("#updatecoretokenerror").text("Error: " + jqxhr.responseText);
+		})
+		.always(function(){
+		// 	$("#spinner").addClass("hidden");
+		});
+		
 }
 
 function graphs(){
