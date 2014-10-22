@@ -57,14 +57,26 @@ foreach($entries as $e) {
 		
 		$ch = curl_init($fullUrl);
 		curl_setopt_array( $ch, $options );
+
 		$res = curl_exec($ch);
+        $error = curl_error($ch);
+        $info = curl_getinfo($ch);
+
+        if ($res === false || $info['http_code'] != 200) {
+            if ($res){
+                $data = json_decode($res);
+                print "SparkAPI error: " . $data->error_description . "\n";
+            } else {
+                print "Problem retrieving data: " . curl_error($ch) . "\n";
+            }
+        } else {
+            $data = json_decode($res);
+            $val = $data->result;
 		
-		$data = json_decode($res);
-		$val = $data->result;
-		
-		$app['db']->executeUpdate('INSERT INTO data VALUES (?, ?, ?, ?)',
-			array($e['id'], $e['name'], $val, new DateTime("now") ),
+            $app['db']->executeUpdate('INSERT INTO data VALUES (?, ?, ?, ?)',
+            array($e['id'], $e['name'], $val, new DateTime("now") ),
 			array(\PDO::PARAM_STR, \PDO::PARAM_STR, \PDO::PARAM_STR, 'datetime'));
+        }
 	}
 }
 
