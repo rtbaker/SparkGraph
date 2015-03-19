@@ -83,8 +83,17 @@ $app->get('/graphdata.json', function(Silex\Application $app, Request $request){
 	}
 
 	foreach (array_keys($data) as $d){
+		$dO = new DateTime($d);
 		$entry = array();
-		$entry[] = array( 'v' => 'new Date(' . $d . ')' );
+		$entry[] = array( 'v' => 'Date(' . 	$dO->format('Y') . ','.
+																						($dO->format('n')-1) . ','.
+																						$dO->format('j') . ','.
+																						$dO->format('G') . ','.
+																						$dO->format('i') . ','.
+																						$dO->format('s') .
+		 	')' );
+		
+	//	$entry[] = array( 'v' => $dO->format('Y/m/d H:i') );
 		
 		// Blank values as placeholders
 		for ($i = 0; $i < $colcount; $i++){
@@ -100,7 +109,8 @@ $app->get('/graphdata.json', function(Silex\Application $app, Request $request){
 		$results['rows'][] = array( 'c' => $entry);
 	}
 	
- return new JsonResponse($results, 200, array('Content-Type', 'application/json') );
+// return new JsonResponse($results, 200, array('Content-Type', 'application/json') );
+return new Response(json_encode($results, JSON_NUMERIC_CHECK), 200);
 })->bind('/graphdata.json');
 
 

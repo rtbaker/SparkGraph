@@ -42,10 +42,10 @@ console.log(jsonData);
 
 	  var options = {
 	    title: 'Graph: ' + title,
-			    curveType: 'function',
+			  //  curveType: 'function',
 	  };
     
-	  var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+	  var chart = new google.visualization.AnnotationChart(document.getElementById('chart_div'));
     
 	  chart.draw(data, options);
 }

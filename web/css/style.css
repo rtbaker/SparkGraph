@@ -10,6 +10,14 @@
 	cursor: pointer;
 }
 
+#chart_div {
+	top-margin: 20px;
+}
+
+h1 {
+	margin-bottom: 30px;
+}
+
 .spinner {
 	background-image: url("/img/ajax-loader.gif");
 	height: 32px;
